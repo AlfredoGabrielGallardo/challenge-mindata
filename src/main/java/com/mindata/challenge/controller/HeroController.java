@@ -17,7 +17,7 @@ public interface HeroController {
     HeroResponseDTO createHero(@Valid @RequestBody HeroRequestDTO hero);
     @PutMapping(value = "/{id}")
     void updateHero(@PathVariable("id") Long id, @Valid @RequestBody HeroRequestDTO hero);
-    @PutMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}")
     void deleteHero(@PathVariable("id") Long id);
     @GetMapping(value = "/{id}")
     HeroResponseDTO getHeroById(@PathVariable("id") Long id);
