@@ -1,0 +1,11 @@
+INSERT INTO hero (name, creation_date) VALUES
+('Batman', CURRENT_TIMESTAMP),
+('Spiderman', CURRENT_TIMESTAMP),
+('Ironman', CURRENT_TIMESTAMP),
+('Lobezno', CURRENT_TIMESTAMP),
+('Superman', CURRENT_TIMESTAMP),
+('Thor', CURRENT_TIMESTAMP),
+('Capitan America', CURRENT_TIMESTAMP),
+('Aquaman', CURRENT_TIMESTAMP),
+('Flash', CURRENT_TIMESTAMP),
+('Viuda Negra', CURRENT_TIMESTAMP);
