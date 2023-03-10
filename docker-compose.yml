@@ -1,0 +1,13 @@
+version: '3'
+services:
+  w2m-challenge:
+    container_name: w2m-challenge
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    networks:
+      - spring-cloud-network
+networks:
+  spring-cloud-network:
+    driver: bridge
