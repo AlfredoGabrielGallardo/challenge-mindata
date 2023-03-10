@@ -7,6 +7,7 @@ import com.mindata.challenge.service.HeroService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -21,14 +22,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(MockitoJUnitRunner.class)
 public class HeroControllerTest {
 
-    @Mock
-    private HeroController heroController;
+    @InjectMocks
+    private HeroControllerImpl heroController;
 
     @Mock
     private HeroService heroService;
-
-    @Mock
-    private ControllerAdviceConfig controllerAdviceConfig;
 
     private MockMvc mockMvc;
 
@@ -42,7 +40,7 @@ public class HeroControllerTest {
 
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(heroController).setControllerAdvice(controllerAdviceConfig).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(heroController).setControllerAdvice(new ControllerAdviceConfig()).build();
     }
 
     @Test
@@ -54,7 +52,7 @@ public class HeroControllerTest {
     }
 
     @Test
-    public void createHero_withInvalidName_shouldReturn200() throws Exception {
+    public void createHero_withInvalidName_shouldReturn400() throws Exception {
 
         this.mockMvc.perform(post(URL_CREATE).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"444\"}"))
@@ -72,12 +70,11 @@ public class HeroControllerTest {
     @Test
     public void createHero_withDuplicateHero_shouldReturn409() throws Exception {
 
-        DuplicatedHeroException duplicatedHeroException = new DuplicatedHeroException();
-
-        Mockito.doThrow(duplicatedHeroException).when(this.heroService).createHero(any());
+        Mockito.doThrow(new DuplicatedHeroException("There is already a super hero with that name")).
+                when(this.heroService).createHero(any());
 
         this.mockMvc.perform(post(URL_CREATE).contentType(MediaType.APPLICATION_JSON)
-                        .content("Batman"))
+                        .content("{\"name\":\"Batman\"}"))
                 .andExpect(status().isConflict());
     }
 
@@ -108,11 +105,11 @@ public class HeroControllerTest {
     @Test
     public void updateHero_withNotFoundHero_shouldReturn404() throws Exception {
 
-        Mockito.doThrow(new HeroNotFoundException()).when(this.heroService).updateHero(any(), any());
+        Mockito.doThrow(new HeroNotFoundException("Hero not found")).when(this.heroService).updateHero(any(), any());
 
         this.mockMvc.perform(put(URL_UPDATE,100).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Hulk\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -125,10 +122,10 @@ public class HeroControllerTest {
     @Test
     public void deleteHero_withNotFoundHero_shouldReturn404() throws Exception {
 
-        Mockito.doThrow(new HeroNotFoundException()).when(this.heroService).deleteHero(any());
+        Mockito.doThrow(new HeroNotFoundException("Hero not found")).when(this.heroService).deleteHero(any());
 
         this.mockMvc.perform(delete(URL_DELETE,1).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -141,10 +138,10 @@ public class HeroControllerTest {
     @Test
     public void getHeroById_withNotFoundHero_shouldReturn404() throws Exception {
 
-        Mockito.doThrow(new HeroNotFoundException()).when(this.heroService).getHeroById(any());
+        Mockito.doThrow(new HeroNotFoundException("Hero not found")).when(this.heroService).getHeroById(any());
 
         this.mockMvc.perform(get(URL_GET_BY_ID,1).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -158,6 +155,13 @@ public class HeroControllerTest {
     public void getAllHeroes_withValidPagination_shouldReturn200() throws Exception {
 
         this.mockMvc.perform(get(URL_GET_ALL, 0, 10, "asc").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getAllHeroes_withRandomSort_shouldReturn200() throws Exception {
+
+        this.mockMvc.perform(get(URL_GET_ALL, 0, 10, "random").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }
