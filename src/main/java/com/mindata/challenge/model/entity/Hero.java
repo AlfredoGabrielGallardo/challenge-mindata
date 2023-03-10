@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "hero")
-public class Hero {
+public class Hero extends HeroAuditory{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
