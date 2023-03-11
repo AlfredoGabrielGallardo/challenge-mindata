@@ -13,10 +13,12 @@ The latest LTS versions of Java, Spring and libraries were used.
 ## Table of Contents
 1. [Technologies used](#technologies-used)
 2. [Installation](#installation)
-3. [Security](#security)
-4. [Data Base](#data-base)
-5. [Documentation](#documentation)
-6. [Coverage obtained in the Tests](#coverage-obtained-in-the-tests)
+3. [Properties of project](#properties-of-project)
+4. [Security](#security)
+5. [Data Base](#data-base)
+6. [Migration](#migration)
+7. [Documentation](#documentation)
+8. [Coverage obtained in the Tests](#coverage-obtained-in-the-tests)
 
 ## Technologies Used
 * [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
@@ -45,6 +47,22 @@ docker compose up
 ```
 You already have the project up in port 8080!
 
+## Properties of project
+The application.properties file is located in the src/main/resources directory.
+```
+server.port=${es.mindata.challenge.port:8080}
+
+# DataSource configuration
+spring.datasource.driver-class-name=${DATA_SOURCE:org.h2.Driver}
+spring.datasource.username=${DATA_SOURCE_USERNAME:admin}
+spring.datasource.password=${DATA_SOURCE_PASSWORD:admin}
+spring.datasource.url=${DATA_SOURCE_URL:jdbc:h2:mem:mindata}
+spring.jpa.hibernate.ddl-auto=${DATA_SOURCE_HIBERNATE_DDL:validate}
+spring.jpa.database-platform=${DATA_SOURCE_HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
+spring.h2.console.enabled=${H2_CONSOLE_ENABLED:true}
+spring.h2.console.settings.web-allow-others=true
+```
+
 ## Security
 Spring Security 6.0.2 was used to implement security in the application.
 
@@ -63,11 +81,28 @@ To use the application, you have two type of users:
 ```
 
 ## Data Base
-If you use the administrator user, you can access the database:
+H2 2.1.214 was used as database. If you use the administrator user, you can access the database:
 [H2 Console](http://localhost:8080/h2-console/)
+
+Remember that the JDBC URL to enter is:
+```
+jdbc:h2:mem:mindata
+```
+
+## Migration
+Flyway 9.5.1 was used to perform the migration.
+To use the application, the HERO table has been created and ten heroes have been inserted.
+
+The migration files are located in the src/main/resources/db/migration directory.
+```
+V1__create_hero_table.sql
+V2__import_hero_data.sql
+```
 
 ## Documentation
 OpenAPI was used to do the documentation: [OpenAPI](http://localhost:8080/swagger-ui/index.html#/)
+
+![openapi](https://user-images.githubusercontent.com/86318023/224459967-553344b7-f81d-4fb6-b81e-019202322127.png)
 
 ## Coverage obtained in the Tests
 
